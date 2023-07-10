@@ -1,0 +1,10 @@
+## Interface: 100100
+## Title: NamePlateKAI
+## Version: 10.1.143
+## Author: Jaijai
+## IconTexture: Interface\AddOns\NamePlateKAI\texture\icon
+## SavedVariables: NamePlateKAIDB, NamePlateKAIFilter, NamePlateKAIAura
+NamePlateKAI.xml
+NamePlateKAI.lua
+Castbar.lua
+Filter.lua

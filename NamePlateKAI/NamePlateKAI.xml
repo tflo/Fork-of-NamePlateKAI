@@ -1,0 +1,305 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Frame name="KaiUnitFrameTemplate" virtual="true" hidden="true" inherits="BackdropTemplate">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="bgTexture" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="barTexture">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="absorbTexture" file="Interface/RaidFrame/Shield-Fill">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.barTexture" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.barTexture" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="4">
+				<Texture parentKey="absorbSpark" file="Interface/CastingBar/UI-CastingBar-Spark" alphaMode="ADD">
+				<TexCoords left="0.2" right="0.8" top="0.35" bottom="0.65"/>
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="6">
+				<FontString parentKey="nameText" inherits="SystemFont_NamePlateFixed" wordwrap="false" justifyH="CENTER" ignoreParentScale="true">
+					<Anchors>
+						<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="3"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="statusText" inherits="GameFontNormal" wordwrap="false" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="2">
+				<Texture parentKey="questTexture" atlas="SmallQuestBang" useAtlasSize="false" hidden="true" ignoreParentAlpha="true">
+					<Size x="17" y="17"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="RIGHT" x="3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<Texture parentKey="questTextureGlow" atlas="UI-QuestPoiCampaign-OuterGlow" useAtlasSize="false" hidden="true" ignoreParentAlpha="false">
+					<Size x="20" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.questTexture" relativePoint="CENTER" x="0" y="0.5"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="raidIcon" file="Interface\TargetingFrame\UI-RaidTargetingIcons" hidden="true" ignoreParentAlpha="true">
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="TOP" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="factionIcon">
+					<Anchors>
+						<Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture parentKey="reactionTexture" file="Interface/AddOns/NamePlateKAI/texture/highlight" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.nameText" relativePoint="TOPLEFT" x="-1" y="0"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.nameText" relativePoint="BOTTOMRIGHT" x="0" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<StatusBar name="KaiCastBarTemplate" inherits="CastingBarFrameAnimsTemplate" virtual="true" frameLevel="100" hidden="true">
+		<KeyValues>
+			<KeyValue key="iconWhenNoninterruptible" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="background" atlas="ui-castingbar-background">
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Text" inherits="NamePlateKAISpellName">
+					<Size x="0" y="16" />
+					<Anchors>
+						<Anchor point="TOP" relativePoint="CENTER" x="0" y="2"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" hidden="true" ignoreParentAlpha="true">
+					<Size x="10" y="12" />
+					<Anchors>
+						<Anchor point="CENTER" relativePoint="LEFT" x="-2" y="-1"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Icon" hidden="true" ignoreParentAlpha="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="2" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<!-- <Texture parentKey="Flash" atlas="ui-castingbar-full-glow-standard" alphaMode="ADD" /> -->
+			</Layer>
+		</Layers>
+	</StatusBar>
+
+	<Frame name="KaiAuraFrameTemplate" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="2">
+				<Texture parentKey="bg">
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="3">
+				<Texture parentKey="icon" setAllPoints="true">
+					<TexCoords left="0.05" right="0.95" top="0.15" bottom="0.75"/>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="nums" inherits="NumberFontNormalSmall" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="3" y="-3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown parentKey="cooldown" reverse="true" drawBling="false" useCircularEdge="true" inherits="CooldownFrameTemplate"/>
+		</Frames>
+	</Frame>
+
+	<FontFamily name="NamePlateKAIFriendlyFont14" virtual="true">
+    <Member alphabet="roman">
+      <Font font="Fonts\FRIZQT__.TTF" height="14" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="korean">
+      <Font font="Fonts\2002.TTF" height="14" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="simplifiedchinese">
+      <Font font="Fonts\ARKai_T.ttf" height="14" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="traditionalchinese">
+      <Font font="Fonts\blei00d.TTF" height="14" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="russian">
+      <Font font="Fonts\FRIZQT___CYR.TTF" height="14" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+  </FontFamily>
+
+	<FontFamily name="NamePlateKAIFriendlyFont16" virtual="true">
+    <Member alphabet="roman">
+      <Font font="Fonts\FRIZQT__.TTF" height="16" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="korean">
+      <Font font="Fonts\2002.TTF" height="16" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="simplifiedchinese">
+      <Font font="Fonts\ARKai_T.ttf" height="16" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="traditionalchinese">
+      <Font font="Fonts\blei00d.TTF" height="16" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="russian">
+      <Font font="Fonts\FRIZQT___CYR.TTF" height="16" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+  </FontFamily>
+
+	<FontFamily name="NamePlateKAIFriendlyFont18" virtual="true">
+    <Member alphabet="roman">
+      <Font font="Fonts\FRIZQT__.TTF" height="18" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="korean">
+      <Font font="Fonts\2002.TTF" height="18" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="simplifiedchinese">
+      <Font font="Fonts\ARKai_T.ttf" height="18" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="traditionalchinese">
+      <Font font="Fonts\blei00d.TTF" height="18" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+    <Member alphabet="russian">
+      <Font font="Fonts\FRIZQT___CYR.TTF" height="18" filter="false" fixedSize="true" outline="NORMAL">
+        <Shadow>
+          <Offset>
+            <AbsDimension x="1" y="-1"/>
+          </Offset>
+          <Color r="0" g="0" b="0"/>
+        </Shadow>
+      </Font>
+    </Member>
+  </FontFamily>
+
+</Ui>
