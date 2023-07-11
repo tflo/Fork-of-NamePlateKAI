@@ -261,7 +261,7 @@ do
 	function Kai_UpdateName(kai)
 		unitID = kai.unitID
 		if UnitShouldShowName(kai) then
-			name, realm = UnitName(unitID)
+			name, realm = UnitPVPName(unitID)
 			if not db.showPlayerRealm then
 				realm = nil
 			end
