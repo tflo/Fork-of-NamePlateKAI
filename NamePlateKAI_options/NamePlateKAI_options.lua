@@ -358,7 +358,7 @@ function mainPanel:okay()
 	profile.raidIcon.size = controls.raidIconSlider:GetValue()
 	profile.spellIcon.size = controls.spellIconSlider:GetValue()
 	profile.dungeonFriendlyBarMulti = controls.dungeonWidthMultiSlider:GetValue()
-	
+
 	profile.barBackdrop.edgeSize = controls.borderWidthSlider:GetValue()
 
 	profile.barAnchorOffsetY = controls.barOffsetYSlider:GetValue()
@@ -2348,7 +2348,7 @@ function options:CreateAurasWidget()
 	aurasGroup:AddChild(CreateCheckBox("disableOmniccCheck", "Disable OmniCC", nil, 0.45))
 	aurasGroup:AddChild(CreateCheckBox("showMagicCheck", "Always show the magic", nil, 0.45))
 	aurasGroup:AddChild(CreateCheckBox("showEnrageCheck", "Always show the enrage", "!This effective only with Boss or Elite", 0.45))
-	aurasGroup:AddChild(CreateSlider("auraHeightSlider", "Icon Height", 8, 20, 1))
+	aurasGroup:AddChild(CreateSlider("auraHeightSlider", "Icon Height", 8, 36, 1))
 	aurasGroup:AddChild(CreateSlider("auraBorderSlider", "Border Width", 1, 3, 0.5))
 
 	aurasGroup.frame:Show()
