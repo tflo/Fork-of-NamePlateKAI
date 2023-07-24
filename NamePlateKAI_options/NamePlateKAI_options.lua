@@ -229,7 +229,9 @@ function mainPanel:refresh()
 	end
 
 	controls.showDebuffCheck:SetValue(profile.buff.enabledEnemy)
+	controls.showDebuffCheck:SetDisabled(IsAddOnLoaded("NameplateAuras"))
 	controls.showBuffCheck:SetValue(profile.buff.enabledFriendly)
+	controls.showBuffCheck:SetDisabled(IsAddOnLoaded("NameplateAuras"))
 	controls.showCountdownCheck:SetValue(profile.buff.countdownNumber)
 	controls.showCountdownCheck:SetDisabled(not GetCVarBool("countdownForCooldowns"))
 	controls.disableOmniccCheck:SetValue(profile.disableOmnicc)

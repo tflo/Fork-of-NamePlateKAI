@@ -1496,6 +1496,9 @@ do -- profile
 		if not _G.OmniCC then
 			db.disableOmnicc = true
 		end
+		if IsAddOnLoaded("NameplateAuras") then
+			db.buff.enabledEnemy, db.buff.enabledFriendly = false, false
+		end
 		if not GetCVarBool("countdownForCooldowns") then
 			db.buff.countdownNumber = false
 		end
