@@ -159,6 +159,7 @@ local tbl = {}
 local FontUnitNameNormal = CreateFont(ADDON_NAME.."TextNormal")
 local FontUnitNamePlayer = CreateFont(ADDON_NAME.."TextPlayer")
 local FontUnitNameSmall = CreateFont(ADDON_NAME.."TextSmall")
+local FontUnitNamePlayerSmall = CreateFont(ADDON_NAME.."TextPlayerSmall")
 local FontNumber = CreateFont(ADDON_NAME.."Number")
 local FontSpellName = CreateFont(ADDON_NAME.."SpellName")
 
@@ -971,7 +972,7 @@ function addon:NamePlateOnAdded(namePlate, unitID, refresh)
 
 	if kai.isPvP and not kai.isBarShown then
 		kai.nameText:SetFontObject(FontUnitNamePlayer)
-		kai.statusText:SetFontObject(FontUnitNamePlayer)
+		kai.statusText:SetFontObject(FontUnitNamePlayerSmall)
 	else
 		kai.nameText:SetFontObject(FontUnitNameNormal)
 		kai.statusText:SetFontObject(FontUnitNameSmall)
@@ -1437,6 +1438,10 @@ function addon:UpdateFonts()
 	FontUnitNameSmall:SetFont(db.castFont.name or filename, db.nameFont.size * 0.9, db.castFont.outline or "")
 	if not FontUnitNameSmall:GetFont() then FontUnitNameSmall:SetFont(filename, db.nameFont.size * 0.9, db.castFont.outline or "") end
 	Font_UpdateShadow(FontUnitNameSmall)
+	local filename = _G.GameFontWhiteTiny:GetFont()
+	FontUnitNamePlayerSmall:SetFont(db.castFont.name or filename, db.nameFontPlayer.size * 0.9, db.castFont.outline or "")
+	if not FontUnitNamePlayerSmall:GetFont() then FontUnitNamePlayerSmall:SetFont(filename, db.nameFontPlayer.size * 0.9, db.castFont.outline or "") end
+	Font_UpdateShadow(FontUnitNamePlayerSmall)
 	FontSpellName:SetFont(db.castFont.name or filename, db.castFont.size, db.castFont.outline or "")
 	if not FontSpellName:GetFont() then FontSpellName:SetFont(filename, db.castFont.size, db.castFont.outline or "") end
 	Font_UpdateShadow(FontSpellName)
