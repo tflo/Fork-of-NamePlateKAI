@@ -97,9 +97,9 @@ addon.defaults = {
 		[10] = {0.9, 1, 0.1}, -- aura magic
 	},
 	statusTextFormat = {
-		players = "|cff88aaff<%s>|r",
-		party = "|cff88ffaa<%s>|r",
-		guildy = "|cffee77ff<%s>|r",
+		players = "|cff88aaff%s|r",
+		party = "|cff88ffaa%s|r",
+		guildy = "|cffee77ff%s|r",
 	},
 	target = {
 		flash = true,
