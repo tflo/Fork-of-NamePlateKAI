@@ -985,7 +985,7 @@ function options:CreateWidget()
 		end)
 		controls.spellFontDropdown = spellFontDropdown
 		group:AddChild(spellFontDropdown)
-		group:AddChild(CreateSlider("spellNameSlider", "Size", 5, 30, 0.1, 0.24))
+		group:AddChild(CreateSlider("spellNameSlider", "Size (Spell Name Only)", 5, 30, 0.1, 0.24))
 		group:AddChild(CreateCheckBox("spellNameOutlineCheck", "Outline", nil, 0.18))
 
 		local unitFontPlayerDropdown = GUI:Create("LSM30_Font")
