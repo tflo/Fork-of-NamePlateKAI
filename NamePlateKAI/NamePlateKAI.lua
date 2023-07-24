@@ -1427,29 +1427,23 @@ end
 
 function addon:UpdateFonts()
 	local filename = _G.GameFontWhite:GetFont()
-	if not FontUnitNameNormal:SetFont(db.nameFont.name or filename, db.nameFont.size, db.nameFont.outline or "") then
-		FontUnitNameNormal:SetFont(filename, db.nameFont.size, db.nameFont.outline)
-	end
+	FontUnitNameNormal:SetFont(db.nameFont.name or filename, db.nameFont.size, db.nameFont.outline or "")
+	if not FontUnitNameNormal:GetFont() then FontUnitNameNormal:SetFont(filename, db.nameFont.size, db.nameFont.outline) end
 	Font_UpdateShadow(FontUnitNameNormal)
-	if not FontUnitNamePlayer:SetFont(db.nameFontPlayer.name or filename, db.nameFontPlayer.size, db.nameFontPlayer.outline or "") then
-		FontUnitNamePlayer:SetFont(filename, db.nameFont.size, db.nameFont.outline or "")
-	end
+	FontUnitNamePlayer:SetFont(db.nameFontPlayer.name or filename, db.nameFontPlayer.size, db.nameFontPlayer.outline or "")
+	if not FontUnitNamePlayer:GetFont() then FontUnitNamePlayer:SetFont(filename, db.nameFont.size, db.nameFont.outline or "") end
 	Font_UpdateShadow(FontUnitNamePlayer)
 	local filename = _G.GameFontWhiteTiny:GetFont()
-	if not FontUnitNameSmall:SetFont(db.castFont.name or filename, db.nameFont.size * 0.9, db.castFont.outline or "") then
-		FontUnitNameSmall:SetFont(filename, db.nameFont.size * 0.9, db.castFont.outline or "")
-	end
+	FontUnitNameSmall:SetFont(db.castFont.name or filename, db.nameFont.size * 0.9, db.castFont.outline or "")
+	if not FontUnitNameSmall:GetFont() then FontUnitNameSmall:SetFont(filename, db.nameFont.size * 0.9, db.castFont.outline or "") end
 	Font_UpdateShadow(FontUnitNameSmall)
-	if not FontSpellName:SetFont(db.castFont.name or filename, db.castFont.size, db.castFont.outline or "") then
-		FontSpellName:SetFont(filename, db.castFont.size, db.castFont.outline or "")
-	end
+	FontSpellName:SetFont(db.castFont.name or filename, db.castFont.size, db.castFont.outline or "")
+	if not FontSpellName:GetFont() then FontSpellName:SetFont(filename, db.castFont.size, db.castFont.outline or "") end
 	Font_UpdateShadow(FontSpellName)
 	local filename = _G.NumberFont_Shadow_Small:GetFont()
-	if not FontNumber:SetFont(db.numFont.name or filename, db.numFont.size, db.numFont.outline or "") then
-		FontNumber:SetFont(filename, db.numFont.size, db.numFont.outline or "")
-	end
+	FontNumber:SetFont(db.numFont.name or filename, db.numFont.size, db.numFont.outline or "")
+	if not FontNumber:GetFont() then FontNumber:SetFont(filename, db.numFont.size, db.numFont.outline or "") end
 	Font_UpdateShadow(FontNumber)
-
 	local dungeonFont = _G["NamePlateKAIFriendlyFont"..db.dungeonFont.size]
 	if dungeonFont then
 		SystemFont_NamePlateFixed:SetFontObject(dungeonFont)
