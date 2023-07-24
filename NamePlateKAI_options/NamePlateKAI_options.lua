@@ -218,6 +218,8 @@ function mainPanel:refresh()
 		controls.spellNameOutlineCheck:SetValue(profile.castFont.outline == "OUTLINE")
 	end
 
+	controls.nameSmallMultiplierSlider:SetValue(profile.nameSmallMultiplier)
+
 	controls.dungeonFontDropdown:SetValue(profile.dungeonFont.size)
 
 	if controls.healthTextureDropdown then
@@ -402,6 +404,8 @@ function mainPanel:okay()
 		profile.castFont.size = controls.spellNameSlider:GetValue()
 		profile.castFont.outline = controls.spellNameOutlineCheck:GetValue() and "OUTLINE" or ""
 	end
+
+	profile.nameSmallMultiplier = controls.nameSmallMultiplierSlider:GetValue()
 
 	profile.dungeonFont.size = controls.dungeonFontDropdown:GetValue()
 
@@ -1003,6 +1007,7 @@ function options:CreateWidget()
 		group:AddChild(unitFontPlayerDropdown)
 		group:AddChild(CreateSlider("unitNamePlayerSlider", "Size", 5, 30, 0.1, 0.24))
 		group:AddChild(CreateCheckBox("unitNamePlayerOutlineCheck", "Outline", nil, 0.18))
+		group:AddChild(CreateSlider("nameSmallMultiplierSlider", "Small Text Multiplier", 0.1, 1, 0.01, 0.325))
 	else
 		local noLSMLabel1 = GUI:Create("Label")
 		noLSMLabel1:SetRelativeWidth(0.9)

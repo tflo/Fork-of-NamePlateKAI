@@ -21,6 +21,7 @@ addon.defaults = {
 	numFont = {name = nil, size = 8.5, outline = "OUTLINE"},
 	castFont = {name = nil, size = 9.5, outline = "OUTLINE"},
 	nameFontPlayer = {name = nil, size = 11.0, outline = ""},
+	nameSmallMultiplier = 0.9,
 	dungeonFont = {size = 14},
 	frameSize = {W = 94, H = 9},
 	healthBarHeight = 7,
@@ -1435,12 +1436,12 @@ function addon:UpdateFonts()
 	if not FontUnitNamePlayer:GetFont() then FontUnitNamePlayer:SetFont(filename, db.nameFontPlayer.size, db.nameFontPlayer.outline or "") end
 	Font_UpdateShadow(FontUnitNamePlayer)
 	local filename = _G.GameFontWhiteTiny:GetFont()
-	FontUnitNameSmall:SetFont(db.castFont.name or filename, db.nameFont.size * 0.9, db.castFont.outline or "")
-	if not FontUnitNameSmall:GetFont() then FontUnitNameSmall:SetFont(filename, db.nameFont.size * 0.9, db.castFont.outline or "") end
+	FontUnitNameSmall:SetFont(db.castFont.name or filename, db.nameFont.size * db.nameSmallMultiplier, db.castFont.outline or "")
+	if not FontUnitNameSmall:GetFont() then FontUnitNameSmall:SetFont(filename, db.nameFont.size * db.nameSmallMultiplier, db.castFont.outline or "") end
 	Font_UpdateShadow(FontUnitNameSmall)
 	local filename = _G.GameFontWhiteTiny:GetFont()
-	FontUnitNamePlayerSmall:SetFont(db.castFont.name or filename, db.nameFontPlayer.size * 0.9, db.castFont.outline or "")
-	if not FontUnitNamePlayerSmall:GetFont() then FontUnitNamePlayerSmall:SetFont(filename, db.nameFontPlayer.size * 0.9, db.castFont.outline or "") end
+	FontUnitNamePlayerSmall:SetFont(db.castFont.name or filename, db.nameFontPlayer.size * db.nameSmallMultiplier, db.castFont.outline or "")
+	if not FontUnitNamePlayerSmall:GetFont() then FontUnitNamePlayerSmall:SetFont(filename, db.nameFontPlayer.size * db.nameSmallMultiplier, db.castFont.outline or "") end
 	Font_UpdateShadow(FontUnitNamePlayerSmall)
 	FontSpellName:SetFont(db.castFont.name or filename, db.castFont.size, db.castFont.outline or "")
 	if not FontSpellName:GetFont() then FontSpellName:SetFont(filename, db.castFont.size, db.castFont.outline or "") end
@@ -1518,6 +1519,7 @@ do -- profile
 			if not tonumber(db.numFont.size) or tonumber(db.numFont.size) < 1 then db.numFont.size = addon.defaults.numFont.size end
 			if not tonumber(db.castFont.size) or tonumber(db.castFont.size) < 1 then db.castFont.size = addon.defaults.castFont.size end
 			if not tonumber(db.nameFontPlayer.size) or tonumber(db.nameFontPlayer.size) < 1 then db.nameFontPlayer.size = addon.defaults.nameFontPlayer.size end
+			db.nameSmallMultiplier = profile.nameSmallMultiplier or addon.defaults.nameSmallMultiplier
 		end
 
 		self:UpdateFonts()
