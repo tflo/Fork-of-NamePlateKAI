@@ -45,6 +45,7 @@ addon.defaults = {
 	dynamicOpacity = true,
 	showPlayerGuild = true,
 	showPlayerRealm = true,
+	showPlayerTitle = true,
 	alwaysShowUnitName = false,
 	trivialScale = 0.7,
 	disableTrivialScaleInInstance = false,
@@ -231,7 +232,7 @@ local Kai_PowerBarSetup
 local Kai_UnitInRange
 
 local GetCVar, GetCVarBool, GetCVarDefault, SetCVar = C_CVar.GetCVar, C_CVar.GetCVarBool, C_CVar.GetCVarDefault, C_CVar.SetCVar
-local UnitExists, UnitIsPlayer, UnitIsUnit, UnitClass, UnitClassification, UnitReaction, UnitName, UnitLevel, UnitCanAttack, UnitPlayerControlled, UnitFactionGroup, UnitThreatSituation, UnitShouldDisplayName, UnitIsInMyGuild = UnitExists, UnitIsPlayer, UnitIsUnit, UnitClass, UnitClassification, UnitReaction, UnitName, UnitLevel, UnitCanAttack, UnitPlayerControlled, UnitFactionGroup, UnitThreatSituation, UnitShouldDisplayName, UnitIsInMyGuild
+local UnitExists, UnitIsPlayer, UnitIsUnit, UnitClass, UnitClassification, UnitReaction, UnitName, UnitPVPName, UnitLevel, UnitCanAttack, UnitPlayerControlled, UnitFactionGroup, UnitThreatSituation, UnitShouldDisplayName, UnitIsInMyGuild = UnitExists, UnitIsPlayer, UnitIsUnit, UnitClass, UnitClassification, UnitReaction, UnitName, UnitPVPName, UnitLevel, UnitCanAttack, UnitPlayerControlled, UnitFactionGroup, UnitThreatSituation, UnitShouldDisplayName, UnitIsInMyGuild
 local GetNamePlates, GetNamePlateForUnit = C_NamePlate.GetNamePlates, C_NamePlate.GetNamePlateForUnit
 local CastingBarFrame_SetUnit, CastingBarFrame_OnShow = CastingBarFrame_SetUnit, CastingBarFrame_OnShow
 local UnitPlayerOrPetInGroup = IsInRaid() and UnitPlayerOrPetInRaid or UnitPlayerOrPetInParty
@@ -261,7 +262,10 @@ do
 	function Kai_UpdateName(kai)
 		unitID = kai.unitID
 		if UnitShouldShowName(kai) then
-			name, realm = UnitPVPName(unitID)
+			name, realm = UnitName(unitID)
+			if db.showPlayerTitle then
+				name = UnitPVPName(unitID) or name
+			end
 			if not db.showPlayerRealm then
 				realm = nil
 			end
