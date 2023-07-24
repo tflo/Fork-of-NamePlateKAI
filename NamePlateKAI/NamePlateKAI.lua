@@ -1431,7 +1431,7 @@ function addon:UpdateFonts()
 	if not FontUnitNameNormal:GetFont() then FontUnitNameNormal:SetFont(filename, db.nameFont.size, db.nameFont.outline) end
 	Font_UpdateShadow(FontUnitNameNormal)
 	FontUnitNamePlayer:SetFont(db.nameFontPlayer.name or filename, db.nameFontPlayer.size, db.nameFontPlayer.outline or "")
-	if not FontUnitNamePlayer:GetFont() then FontUnitNamePlayer:SetFont(filename, db.nameFont.size, db.nameFont.outline or "") end
+	if not FontUnitNamePlayer:GetFont() then FontUnitNamePlayer:SetFont(filename, db.nameFontPlayer.size, db.nameFontPlayer.outline or "") end
 	Font_UpdateShadow(FontUnitNamePlayer)
 	local filename = _G.GameFontWhiteTiny:GetFont()
 	FontUnitNameSmall:SetFont(db.castFont.name or filename, db.nameFont.size * 0.9, db.castFont.outline or "")
