@@ -1,7 +1,7 @@
 local _TOCVERSION = select(4, GetBuildInfo())
 local ADDON_NAME, addon = ...
 _G[ADDON_NAME] = addon
-addon.version = GetAddOnMetadata(ADDON_NAME, "Version")
+addon.version = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version")
 
 addon.events = {}
 addon.events.units = {}
