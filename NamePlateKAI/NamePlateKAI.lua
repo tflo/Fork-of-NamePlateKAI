@@ -21,7 +21,7 @@ addon.defaults = {
 	numFont = {name = nil, size = 8.5, outline = "OUTLINE"},
 	castFont = {name = nil, size = 9.5, outline = "OUTLINE"},
 	nameFontPlayer = {name = nil, size = 11.0, outline = ""},
-	nameSmallMultiplier = 0.9,
+	nameSmallMultiplier = 0.85,
 	dungeonFont = {size = 14},
 	frameSize = {W = 94, H = 9},
 	healthBarHeight = 7,
