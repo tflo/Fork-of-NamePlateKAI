@@ -23,6 +23,7 @@ addon.defaults = {
 	nameFontPlayer = {name = nil, size = 11.0, outline = ""},
 	nameSmallMultiplier = 0.85,
 	dungeonFont = {size = 14},
+	useNameSmallInsteadPlayerSmall = false,
 	frameSize = {W = 94, H = 9},
 	healthBarHeight = 7,
 	castBarHeight = 6,
@@ -155,7 +156,6 @@ end
 addon.defaultFilters = {}
 
 local select, unpack, strfind, strmatch, tinsert, tremove, tonumber, floor, pairs, band, rshift, min, max = select, unpack, string.find, string.match, tinsert, tremove, tonumber, math.floor, pairs, bit.band, bit.rshift, min, max
-local tbl = {}
 
 local FontUnitNameNormal = CreateFont(ADDON_NAME.."TextNormal")
 local FontUnitNamePlayer = CreateFont(ADDON_NAME.."TextPlayer")
@@ -240,7 +240,6 @@ local CastingBarFrame_SetUnit, CastingBarFrame_OnShow = CastingBarFrame_SetUnit,
 local UnitPlayerOrPetInGroup = IsInRaid() and UnitPlayerOrPetInRaid or UnitPlayerOrPetInParty
 
 local function UnitShouldShowName(kai)
-	-- print(GetTime(), UnitName(kai.unitID), "isMouse:", kai.isMouseOver, "isTarget:", kai.isTarget, "S:", UnitShouldDisplayName(kai.unitID))
 	if db.alwaysShowUnitName and kai.unitExists then
 		return true
 	elseif kai.hideName then
@@ -761,7 +760,6 @@ local function NamePlate_OnSizeChanged(namePlate)
 end
 
 local function WidgetContainer_SetPoint(container, point, rTo, rPoint)
-	-- print(GetTime(), "W_SetPoint", point, rTo, rPoint)
 	local kai = kaiPlates[widgetContainers[container]]
 	if kai and kai ~= rTo then
 		container:SetParent(kai)
@@ -973,7 +971,11 @@ function addon:NamePlateOnAdded(namePlate, unitID, refresh)
 
 	if kai.isPvP and not kai.isBarShown then
 		kai.nameText:SetFontObject(FontUnitNamePlayer)
-		kai.statusText:SetFontObject(FontUnitNamePlayerSmall)
+		if db.useNameSmallInsteadPlayerSmall then
+			kai.statusText:SetFontObject(FontUnitNameSmall)
+		else
+			kai.statusText:SetFontObject(FontUnitNamePlayerSmall)
+		end
 	else
 		kai.nameText:SetFontObject(FontUnitNameNormal)
 		kai.statusText:SetFontObject(FontUnitNameSmall)
@@ -1223,7 +1225,6 @@ function addon:QueueSetCVar(key, value)
 		if self.cvarList then
 			for k, v in pairs(self.cvarList) do
 				SetCVar(k, v)
-				-- print("SetCVar:", k, GetCVar(k))
 			end
 			wipe(self.cvarList)
 		end
@@ -1416,6 +1417,15 @@ do -- encounter modules
 	end
 end
 
+local function Font_SetFont(font, fontDefault, name, size, outline)
+	local filename = (type(fontDefault) == "string" and _G[fontDefault] or fontDefault):GetFont()
+	if not outline then outline = "" end
+	font:SetFont(name or filename, size, outline)
+	if not font:GetFont() then
+		font:SetFont(filename, size, outline)
+	end
+end
+
 local function Font_UpdateShadow(font)
 	local _, _, flags = font:GetFont()
 	if flags == "" then
@@ -1428,27 +1438,22 @@ local function Font_UpdateShadow(font)
 end
 
 function addon:UpdateFonts()
-	local filename = _G.GameFontWhite:GetFont()
-	FontUnitNameNormal:SetFont(db.nameFont.name or filename, db.nameFont.size, db.nameFont.outline or "")
-	if not FontUnitNameNormal:GetFont() then FontUnitNameNormal:SetFont(filename, db.nameFont.size, db.nameFont.outline) end
+	Font_SetFont(FontUnitNameNormal, _G.GameFontWhite, db.nameFont.name, db.nameFont.size, db.nameFont.outline)
 	Font_UpdateShadow(FontUnitNameNormal)
-	FontUnitNamePlayer:SetFont(db.nameFontPlayer.name or filename, db.nameFontPlayer.size, db.nameFontPlayer.outline or "")
-	if not FontUnitNamePlayer:GetFont() then FontUnitNamePlayer:SetFont(filename, db.nameFontPlayer.size, db.nameFontPlayer.outline or "") end
+
+	Font_SetFont(FontUnitNamePlayer, _G.GameFontWhite, db.nameFontPlayer.name, db.nameFontPlayer.size, db.nameFontPlayer.outline)
 	Font_UpdateShadow(FontUnitNamePlayer)
-	local filename = _G.GameFontWhiteTiny:GetFont()
-	FontUnitNameSmall:SetFont(db.castFont.name or filename, db.nameFont.size * db.nameSmallMultiplier, db.castFont.outline or "")
-	if not FontUnitNameSmall:GetFont() then FontUnitNameSmall:SetFont(filename, db.nameFont.size * db.nameSmallMultiplier, db.castFont.outline or "") end
-	Font_UpdateShadow(FontUnitNameSmall)
-	local filename = _G.GameFontWhiteTiny:GetFont()
-	FontUnitNamePlayerSmall:SetFont(db.castFont.name or filename, db.nameFontPlayer.size * db.nameSmallMultiplier, db.castFont.outline or "")
-	if not FontUnitNamePlayerSmall:GetFont() then FontUnitNamePlayerSmall:SetFont(filename, db.nameFontPlayer.size * db.nameSmallMultiplier, db.castFont.outline or "") end
+
+	Font_SetFont(FontUnitNamePlayerSmall, _G.GameFontWhite, db.nameFontPlayer.name, db.nameFontPlayer.size * db.nameSmallMultiplier, db.nameFontPlayer.outline)
 	Font_UpdateShadow(FontUnitNamePlayerSmall)
-	FontSpellName:SetFont(db.castFont.name or filename, db.castFont.size, db.castFont.outline or "")
-	if not FontSpellName:GetFont() then FontSpellName:SetFont(filename, db.castFont.size, db.castFont.outline or "") end
+
+	Font_SetFont(FontUnitNameSmall, _G.GameFontWhiteTiny, db.castFont.name, db.nameFont.size * db.nameSmallMultiplier, db.castFont.outline)
+	Font_UpdateShadow(FontUnitNameSmall)
+
+	Font_SetFont(FontSpellName, _G.GameFontWhiteTiny, db.castFont.name, db.castFont.size, db.castFont.outline)
 	Font_UpdateShadow(FontSpellName)
-	local filename = _G.NumberFont_Shadow_Small:GetFont()
-	FontNumber:SetFont(db.numFont.name or filename, db.numFont.size, db.numFont.outline or "")
-	if not FontNumber:GetFont() then FontNumber:SetFont(filename, db.numFont.size, db.numFont.outline or "") end
+
+	Font_SetFont(FontNumber, _G.NumberFont_Shadow_Small, db.numFont.name, db.numFont.size, db.numFont.outline)
 	Font_UpdateShadow(FontNumber)
 	local dungeonFont = _G["NamePlateKAIFriendlyFont"..db.dungeonFont.size]
 	if dungeonFont then
@@ -1483,7 +1488,6 @@ do -- profile
 
 	function addon:LoadProfile(doFilterUpdate)
 		local profile = _G.NamePlateKAIDB.profiles.Default
-		-- tbl.ReleaseList(db)
 		wipe(db)
 		tMergeCopy(self.defaults, profile, db, "filters")
 		self:ClearFilterCacheAll()
@@ -1519,7 +1523,7 @@ do -- profile
 			if not tonumber(db.numFont.size) or tonumber(db.numFont.size) < 1 then db.numFont.size = addon.defaults.numFont.size end
 			if not tonumber(db.castFont.size) or tonumber(db.castFont.size) < 1 then db.castFont.size = addon.defaults.castFont.size end
 			if not tonumber(db.nameFontPlayer.size) or tonumber(db.nameFontPlayer.size) < 1 then db.nameFontPlayer.size = addon.defaults.nameFontPlayer.size end
-			db.nameSmallMultiplier = profile.nameSmallMultiplier or addon.defaults.nameSmallMultiplier
+			if not tonumber(db.nameSmallMultiplier) then db.nameSmallMultiplier = addon.defaults.nameSmallMultiplier end
 		end
 
 		self:UpdateFonts()
@@ -2046,6 +2050,7 @@ do -- Auras
 
 	local function CreateBuff(kai)
 		local buff = CreateFrame("Frame", nil, kai, addon.auraTemplate or "KaiAuraFrameTemplate")
+		buff.nums:SetParent(buff.cooldown)
 		buff:SetMouseClickEnabled(false)
 
 		tinsert(kai.buffs, buff)

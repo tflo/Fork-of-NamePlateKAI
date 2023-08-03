@@ -1,6 +1,6 @@
 ## Interface: 100105
 ## Title: NamePlateKAI Options
-## Version: 10.1.65
+## Version: 10.1.66
 ## Dependencies: NamePlateKAI
 ## IconTexture: Interface\AddOns\NamePlateKAI\texture\icon
 

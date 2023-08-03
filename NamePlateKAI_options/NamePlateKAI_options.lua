@@ -219,6 +219,7 @@ function mainPanel:refresh()
 	end
 
 	controls.nameSmallMultiplierSlider:SetValue(profile.nameSmallMultiplier)
+	controls.useNameSmallInsteadPlayerSmallCheck:SetValue(profile.useNameSmallInsteadPlayerSmall)
 
 	controls.dungeonFontDropdown:SetValue(profile.dungeonFont.size)
 
@@ -406,6 +407,7 @@ function mainPanel:okay()
 	end
 
 	profile.nameSmallMultiplier = controls.nameSmallMultiplierSlider:GetValue()
+	profile.useNameSmallInsteadPlayerSmall = controls.useNameSmallInsteadPlayerSmallCheck:GetValue()
 
 	profile.dungeonFont.size = controls.dungeonFontDropdown:GetValue()
 
@@ -853,34 +855,6 @@ function options:CreateWidget()
 	end)
 	applyButton.frame:Show()
 
-	-- local aurasButton = GUI:Create("Button") -- Auras
-	-- aurasButton.frame:SetParent(mainPanel)
-	-- aurasButton:SetWidth(90)
-	-- aurasButton.frame:SetHeight(20)
-	-- aurasButton:SetPoint("TOPRIGHT", applyButton.frame, "TOPLEFT", -FRAME_MARGIN, 0)
-	-- aurasButton:SetText(auraPanel.name)
-	-- aurasButton:SetCallback("OnClick", function()
-	-- 	-- InterfaceOptionsFrame_OpenToCategory(auraPanel)
-	-- 	if auraPanel.category then
-	-- 		_G.SettingsPanel:SelectCategory(auraPanel.category)
-	-- 	end
-	-- end)
-	-- aurasButton.frame:Show()
-	--
-	-- local filtersButton = GUI:Create("Button") -- Filters
-	-- filtersButton.frame:SetParent(mainPanel)
-	-- filtersButton:SetWidth(90)
-	-- filtersButton.frame:SetHeight(20)
-	-- filtersButton:SetPoint("TOPRIGHT", aurasButton.frame, "TOPLEFT", -4, 0)
-	-- filtersButton:SetText(filterPanel.name)
-	-- filtersButton:SetCallback("OnClick", function()
-	-- 	-- InterfaceOptionsFrame_OpenToCategory(filterPanel)
-	-- 	if filterPanel.category then
-	-- 		_G.SettingsPanel:SelectCategory(filterPanel.category)
-	-- 	end
-	-- end)
-	-- filtersButton.frame:Show()
-
 	local mainGroup = GUI:Create("ScrollFrame")
 	-- group:AddChild(filterGroup)
 	mainGroup.frame:SetParent(mainPanel)
@@ -977,7 +951,7 @@ function options:CreateWidget()
 		group:AddChild(CreateCheckBox("unitNameOutlineCheck", "Outline", nil, 0.18))
 
 		local spellFontDropdown = GUI:Create("LSM30_Font")
-		spellFontDropdown:SetLabel("Spell Name and Status Text")
+		spellFontDropdown:SetLabel("Spell Name and NPC Small Text")
 		spellFontDropdown:SetRelativeWidth(0.55)
 		local spellFontList = {[_G.DEFAULT] = _G.GameFontWhiteTiny:GetFont()}
 		for k, v in pairs(AceGUIWidgetLSMlists.font) do
@@ -1008,6 +982,7 @@ function options:CreateWidget()
 		group:AddChild(CreateSlider("unitNamePlayerSlider", "Size", 5, 30, 0.1, 0.24))
 		group:AddChild(CreateCheckBox("unitNamePlayerOutlineCheck", "Outline", nil, 0.18))
 		group:AddChild(CreateSlider("nameSmallMultiplierSlider", "Small Text Multiplier", 0.1, 1, 0.01, 0.325))
+		group:AddChild(CreateCheckBox("useNameSmallInsteadPlayerSmallCheck", "Use Spell Font as Small Text Font", nil, 0.5))
 	else
 		local noLSMLabel1 = GUI:Create("Label")
 		noLSMLabel1:SetRelativeWidth(0.9)
@@ -1125,13 +1100,13 @@ function options:CreateWidget()
 	controls.rangeCheckerModePlayerClass = rangeCheckerModePlayerClass
 	group:AddChild(rangeCheckerModePlayerClass)
 
-	group:AddChild(CreateCheckBox("showGuildNameCheck", "Display guild name for friendly players", nil, 0.9))
-	group:AddChild(CreateCheckBox("showRealmNameCheck", "Display realm name for players", nil, 0.9))
 	group:AddChild(CreateCheckBox("showTitleCheck", "Display title for players", nil, 0.9))
+	group:AddChild(CreateCheckBox("showRealmNameCheck", "Display realm name for players", nil, 0.9))
+	group:AddChild(CreateCheckBox("showGuildNameCheck", "Display guild name for friendly players", nil, 0.9))
 	group:AddChild(CreateCheckBox("enemyPowerBarCheck", "Display power bar for hostile players", nil, 0.9))
 	group:AddChild(CreateCheckBox("friendlyClickThroughCheck", "Click-through for friendly units", "!Check this you can't select by mouse-click on those units.", 0.9))
 	group:AddChild(CreateCheckBox("dungeonFriendlyClickThroughCheck", "Click-through for friendly units in Dungeon", "!Check this you can't select by mouse-click on those units.", 0.9))
-	group:AddChild(CreateCheckBox("disableFreindlyBarsCheck", "Do not display a health bar for frinedly units", "This will aslo shrink Friendly Nameplates in the dungeon.", 0.9))
+	group:AddChild(CreateCheckBox("disableFreindlyBarsCheck", "Do not display a health bar for frinedly units", nil, 0.9))
 	group:AddChild(CreateCheckBox("disableFactionIconCheck", "Do not display a faction icon in PvP Battle Zone", nil, 0.9))
 	group:AddChild(CreateCheckBox("disableQuestObjectiveIconCheck", "Disable Quest Objective Indicator", nil, 0.9))
 	group:AddChild(CreateCheckBox("disableTrivialScaleInInstanceCheck", "Disable Trivial Scale in the instance", nil, 0.9))

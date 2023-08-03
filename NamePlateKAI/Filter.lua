@@ -69,6 +69,7 @@ db.global = { zone = "Global",
 
 		-- Dragonflight season2
 		"h\\"..C_ChallengeMode.GetAffixInfo(135), 204773,
+		"h\\"..C_ChallengeMode.GetAffixInfo(136), 204560,
 	},
 	recolor = {
 		-- Fated Raid
