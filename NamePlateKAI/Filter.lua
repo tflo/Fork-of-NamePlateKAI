@@ -3743,6 +3743,8 @@ db["map2082"] = { zone = 1204, -- Halls of Infusion
 		[196043] = "DEMONHUNTER", -- Primalist Infuser
 	},
 	auras = {
+		{id = "map2082:395694", spellID = 395694, buff = true, enlarge = true, emphasize = true, color = 10}, -- Elemental Focus
+		{id = "map2082:377402", spellID = 377402, buff = true, emphasize = true, color = 8}, -- Aqueous Barrier
 	},
 }
 
@@ -3990,6 +3992,87 @@ db["map2071"] = { zone = 1197, -- Uldaman Legacy of Tyr
 	auras = {
 	},
 }
+
+db["map2196"] = { zone = 1209, -- Dawn of the Infinite
+	group = 440,
+	category = 1009,
+	order = {
+		"h\\2521", 205384, 205435,
+		"h\\2528", 199749, 206068, 206066, 206140, 206065,
+		"h\\2535", 206214, 204536, 204262,
+		"h\\2537", 205691, 204918,
+		"h\\2526", 201223, 205158, 205152, 201222,
+		"h\\2536", 199748, 206230, 208438, 206063, 208698, 205337, 205363, 201756,
+		"h\\2534", 205727, 205723, 203799, 206352, 203857, 206351,
+		"h\\2538", 205212, 205265,
+	},
+	flags = {
+		["*"] = {
+			[198995] = 0x0020, -- Chronikar
+			[198996] = 0x0020, -- Manifested Timeways
+			[198997] = 0x0020, -- Blight of Galakrond (1st phase)
+			[201792] = 0x0020, -- Ahnzon
+			[207638] = 0x0020, -- Blight of Galakrond (intermission)
+			[201788] = 0x0020, -- Dazhak
+			[201790] = 0x0020, -- Loszkeleth
+			[198998] = 0x0020, -- Tyr, the Infinite Keeper
+			[198999] = 0x0020, -- Morchie
+			[202789] = 0x0020, -- Morchie (intermission)
+			[203678] = 0x0020, -- Grommash Hellscream
+			[203679] = 0x0020, -- Anduin Lothar
+			[201756] = 0x0040,
+		},
+	},
+	recolor = {
+		[205384] = 2, -- Infinite Chronoweaver
+		[205435] = "WARRIOR", -- Epoch Ripper
+
+		[199749] = 2, -- Timestream Anomaly
+		[206068] = 1, -- Temporal Fusion
+		[206066] = "MAGE", -- Timestream Leech
+		[206140] = "WARLOCK", -- Coalesced Time
+		[206065] = 7, -- Interval
+
+		-- [206214] = 2, -- Infinite Infiltrator
+
+		[204536] = 7, -- Blight Chunk
+		[204262] = 4, -- Necrofrost
+
+		[205691] = 1, -- Iridikron's Creation
+		[204918] = 1, -- Iridikron's Creation
+
+		[201223] = 1, -- Infinite Twilight Magus
+		[205158] = "DEMONHUNTER", -- Spurlok, Timesworn Sentinel
+		[205152] = "PRIEST", -- Lerai, Timesworn Maiden
+		[201222] = 2, -- Valow, Timesworn Keeper
+
+		[199748] = "MAGE", -- Timeline Marauder
+		-- [206230] = 2, -- Infinite Diversionist
+		[208438] = "WARRIOR", -- Infinite Saboteur
+		[206063] = 7, -- Temporal Deviation
+		[208698] = "MAGE", -- Infinite Riftmage
+		[205337] = "PRIEST", -- Infinite Timebender
+		[205363] = 2, -- Time-Lost Waveshaper
+		[201756] = 4, -- Familiar Face
+
+		[205727] = 1, -- Time-Lost Rocketeer
+		[205723] = "DEMONHUNTER", -- Time-Lost Aerobot
+		[203799] = 2, -- Horde Axe Thrower
+		[206352] = 2, -- Alliance Archer
+		[203857] = 3, -- Horde Warlock
+		[206351] = 3, -- Alliance Conjuror
+
+		[205212] = 2, -- Infinite Keeper
+		[205265] = 7, -- Time-Displaced Trooper
+	},
+	auras = {
+		{id = "map2196:415438", spellID = 415438, buff = true, enlarge = false, emphasize = true, color = 10}, -- Enervate
+		{id = "map2196:412012", spellID = 412012, buff = true, enlarge = false, emphasize = true, color = 10}, -- Temposlice
+		-- {id = "map2196:417481", spellID = 417481, buff = true, enlarge = false, emphasize = true, color = 8}, -- Displace Chronosequence
+		{id = "map2196:411969", spellID = 411969, buff = true, enlarge = false, emphasize = true, color = 8}, -- Millennium Defense
+	},
+}
+
 
 db["map325"] = { zone = 68, -- The Vortex Pinnacle
 	category = 401,
