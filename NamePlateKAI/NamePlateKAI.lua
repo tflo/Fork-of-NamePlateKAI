@@ -227,8 +227,8 @@ local Kai_UpdateRaidIcon
 local Kai_UpdateFactionIcon
 local Kai_UpdateQuestIcon
 local Kai_Refresh
-local Kai_AurasUpdate
 local Kai_AurasSetup
+local Kai_AurasFullUpdate
 local Aura_SetStyle
 local Kai_PowerBarSetup
 local Kai_UnitInRange
@@ -581,11 +581,15 @@ function Kai_Restyle(kai)
 	end
 end
 
-function Kai_OnEvent(kai, event, ...)
+function Kai_OnEvent(kai, event, arg1, arg2)
 	if event == "UNIT_HEALTH" then
 		Kai_UpdateHealth(kai)
 	elseif event == "UNIT_AURA" then
-		Kai_AurasUpdate(kai)
+		if arg2 and not arg2.isFullUpdate then
+			Kai_AurasUnitAura(kai, arg2)
+		else
+			Kai_AurasFullUpdate(kai)
+		end
 	elseif event == "UNIT_MAXHEALTH" then
 		Kai_UpdateHealthMax(kai)
 		Kai_UpdateHealth(kai)
@@ -782,6 +786,8 @@ function addon:NamePlateOnCreate(namePlate)
 	kai.healthValue = 0
 	kai.absorb = 0
 	kai.buffs = {}
+	kai.auras = {}
+	kai.aurasSortMap = {}
 	kai.nameAlpha = 1.0
 	-- kai.nameColorIndex = 1
 	kai.elapsed = 0
@@ -1018,7 +1024,6 @@ function addon:NamePlateOnAdded(namePlate, unitID, refresh)
 	Kai_UpdateThreatBorder(kai)
 	Kai_UpdateFactionIcon(kai)
 	Kai_UpdateRaidIcon(kai)
-	-- Kai_AurasUpdate(kai)
 	Kai_AurasSetup(kai)
 
 	if kai.isPvP then
@@ -2036,10 +2041,7 @@ do -- Auras
 
 	local function Buff_Hide(self)
 		self:Hide()
-		self.spellID = nil
-		self.expire = nil
-		self.caster = nil
-		self.duration = nil
+		self.auraInstanceID = nil
 	end
 
 	local function Buff_Show(self)
@@ -2057,41 +2059,22 @@ do -- Auras
 		return buff
 	end
 
-	local UnitAura, UnitBuff, UnitDebuff, CooldownFrame_Set = UnitAura, UnitBuff, UnitDebuff, CooldownFrame_Set
-	local _, shouldShowFunc, info, unit, index, buff, name, texture, count, auraType, duration, expire, caster, nameplatePersonal, spellID, nameplateAll, isBoss, canApplyAura
-	local pool = {}
+	local CooldownFrame_Set, CooldownFrame_Clear, tIndexOf = CooldownFrame_Set, CooldownFrame_Clear, tIndexOf
+	local GetAuraDataBySlot = C_UnitAuras.GetAuraDataBySlot
+  local GetAuraDataByAuraInstanceID = C_UnitAuras.GetAuraDataByAuraInstanceID
+  local IsAuraFilteredOutByInstanceID = C_UnitAuras.IsAuraFilteredOutByInstanceID
 	local friendlyBuffList = {}
 	local friendlyDebuffList = {}
 	local enemyBuffList = {}
 	local enemyDebuffList = {}
-
-	local function UnitBuffByName(unit, spellName, filters)
-		if not spellName then return end
-		for i = 1, 50 do
-			name, texture, count, auraType, duration, expire, caster, _, nameplatePersonal, spellID, canApplyAura, isBoss, _, nameplateAll = UnitBuff(unit, i, filters)
-			if not name then return end
-			if name == spellName then
-				return name, texture, count, auraType, duration, expire, caster, _, nameplatePersonal, spellID, canApplyAura, isBoss, _, nameplateAll
-			end
-		end
-	end
-
-	local function UnitDebuffByName(unit, spellName, filters)
-		if not spellName then return end
-		for i = 1, 50 do
-			name, texture, count, auraType, duration, expire, caster, _, nameplatePersonal, spellID, canApplyAura, isBoss, _, nameplateAll = UnitDebuff(unit, i, filters)
-			if not name then return end
-			if name == spellName then
-				return name, texture, count, auraType, duration, expire, caster, _, nameplatePersonal, spellID, canApplyAura, isBoss, _, nameplateAll
-			end
-		end
-	end
+	local filterInfo
 
 	function addon.UnitAuraID(unit, spellName, filters)
 		if not spellName then return end
 		if filters == true then
 			return addon.UnitAuraID(unit, spellName) or addon.UnitAuraID(unit, spellName, "HARMFUL")
 		end
+		local name, _, spellID
 		for i = 1, 50 do
 			name, _, _, _, _, _, _, _, _, spellID = UnitAura(unit, i, filters)
 			if not name then return end
@@ -2125,7 +2108,7 @@ do -- Auras
 
 	function addon:AurasAddFilter(filter)
 		local list = GetList(filter)
-		info = list[filter.spellID]
+		local info = list[filter.spellID]
 		if not info then
 			info = {}
 			list[filter.spellID] = info
@@ -2154,7 +2137,7 @@ do -- Auras
 
 	function addon:AurasRemoveFilter(filter)
 		local list = GetList(filter)
-		info = list[filter.spellID]
+		local info = list[filter.spellID]
 		if info then
 			list[filter.spellID] = nil
 			wipe(info)
@@ -2237,27 +2220,27 @@ do -- Auras
 		end
 	end
 
-	local function ShouldShowFriendlyBuffList(kai)
-		if friendlyBuffList[spellID] then
-			info = friendlyBuffList[spellID]
-			if not info.player or caster == "player" then
-				return info.show
+	local function ShouldShowFriendlyBuffList(auraInfo)
+		if friendlyBuffList[auraInfo.spellId] then
+			filterInfo = friendlyBuffList[auraInfo.spellId]
+			if not filterInfo.player or auraInfo.sourceUnit == "player" then
+				return filterInfo.show
 			end
 		end
 	end
 
-	local function ShouldShowFriendlyDebuff()
-		return isBoss
+	local function ShouldShowFriendlyDebuff(auraInfo)
+		return auraInfo.isBossAura
 	end
 
-	local function ShouldShowFriendlyDebuffList(kai)
-		if friendlyDebuffList[spellID] then
-			info = friendlyDebuffList[spellID]
-			if not info.player or caster == "player" then
-				return info.show
+	local function ShouldShowFriendlyDebuffList(auraInfo)
+		if friendlyDebuffList[auraInfo.spellId] then
+			filterInfo = friendlyDebuffList[auraInfo.spellId]
+			if not filterInfo.player or auraInfo.sourceUnit == "player" then
+				return filterInfo.show
 			end
 		end
-		return isBoss
+		return auraInfo.isBossAura
 	end
 
 	local InfoEnrage = {
@@ -2265,88 +2248,47 @@ do -- Auras
 	}
 
 	local InfoMagic = {
-		id = "global:MAGIC", spellID = 0, buff = true, enlarge = false, emphasize = false, color = 10,
+		id = "global:MAGIC", spellID = 0, buff = true, enlarge = false, emphasize = false,
+	}
+	InfoMagic.colorR, InfoMagic.colorG, InfoMagic.colorB = unpack(addon.defaults.filterColors[10])
+
+	local InfoDummy = {
+		id = "global:DUMMY", spellID = 0,
 	}
 
-	local function ShouldShowEnemyBuff(kai)
-		if kai.buffShowMagic and auraType == "Magic" then
-			info = InfoMagic
+	local function ShouldShowEnemyBuff(auraInfo)
+		if db.buff.showMagic and auraInfo.dispelName == "Magic" then
+			filterInfo = InfoMagic
 			return true
-		elseif kai.buffShowEnrage and auraType == "" then
-			info = InfoEnrage
+		elseif db.buff.showEnrage and auraInfo.dispelName == "" then
+			filterInfo = InfoEnrage
 			return true
 		end
 	end
 
-	local function ShouldShowEnemyBuffList(kai)
-		if enemyBuffList[spellID] then
-			info = enemyBuffList[spellID]
-			if not info.player or caster == "player" then
-				return info.show
+	local function ShouldShowEnemyBuffList(auraInfo)
+		if enemyBuffList[auraInfo.spellId] then
+			filterInfo = enemyBuffList[auraInfo.spellId]
+			if not filterInfo.player or auraInfo.sourceUnit == "player" then
+				return filterInfo.show
 			end
 		else
-			return ShouldShowEnemyBuff(kai)
+			return ShouldShowEnemyBuff(auraInfo)
 		end
 	end
 
-	local function ShouldShowEnemyDebuff()
-		return nameplateAll or (nameplatePersonal and (caster == "player" or caster == "pet" or caster == "vehicle"))
+	local function ShouldShowEnemyDebuff(auraInfo)
+		return auraInfo.nameplateShowAll or (auraInfo.nameplateShowPersonal and (auraInfo.sourceUnit == "player" or auraInfo.sourceUnit == "pet" or auraInfo.sourceUnit == "vehicle"))
 	end
 
-	local function ShouldShowEnemyDebuffList(kai)
-		if enemyDebuffList[spellID] then
-			info = enemyDebuffList[spellID]
-			if not info.player or caster == "player" then
-				return info.show
+	local function ShouldShowEnemyDebuffList(auraInfo)
+		if enemyDebuffList[auraInfo.spellId] then
+			filterInfo = enemyDebuffList[auraInfo.spellId]
+			if not filterInfo.player or auraInfo.sourceUnit == "player" then
+				return filterInfo.show
 			end
 		end
-		return nameplateAll or (nameplatePersonal and (caster == "player" or caster == "pet" or caster == "vehicle"))
-	end
-
-	local function UpdateBuff(kai)
-		info = nil
-		if canApplyAura then isBoss = false end
-		if not shouldShowFunc(kai) then return end
-		buff = kai.buffs[index] or CreateBuff(kai)
-		if buff.spellID ~= spellID or buff.expire ~= expire or buff.caster ~= caster or buff.count ~= count then
-			buff.spellID = spellID
-			buff.expire = expire
-			buff.caster = caster
-			buff.count = count
-			buff.icon:SetTexture(texture)
-			buff:SetIgnoreParentAlpha(isBoss or info and info.emphasize or false)
-			if count > 1 then
-				buff.nums:SetText(count)
-				buff.nums:Show()
-			else
-				buff.nums:Hide()
-			end
-			if duration > 0 then
-				CooldownFrame_Set(buff.cooldown, expire - duration, duration, true, true)
-			else
-				buff.cooldown:SetDrawEdge(false);
-				buff.cooldown:SetCooldown(-1, 1)
-			end
-			if isBoss or info and info.enlarge then
-				buff:SetSize(db.buff.size.W * db.buff.bossScale, db.buff.size.H * db.buff.bossScale)
-			else
-				buff:SetSize(db.buff.size.W - db.buff.borderSize, db.buff.size.H - db.buff.borderSize)
-			end
-			if isBoss then
-				buff.bg:SetVertexColor(1, 0, 0.5)
-			elseif info and info.colorR then
-				buff.bg:SetVertexColor(info.colorR, info.colorG, info.colorB)
-			elseif caster == "player" or caster == "vehicle" or caster == "pet" or caster == nil or UnitIsUnit("player", caster) or UnitIsUnit("pet", caster) then
-				buff.bg:SetVertexColor(0, 0, 0)
-			elseif UnitPlayerOrPetInGroup(caster) then
-				buff.bg:SetVertexColor(0, 0.35, 0.75)
-			else
-				buff.bg:SetVertexColor(0, 0, 0)
-			end
-		end
-		Buff_Show(buff)
-		index = index + 1
-		return true
+		return auraInfo.nameplateShowAll or (auraInfo.nameplateShowPersonal and (auraInfo.sourceUnit == "player" or auraInfo.sourceUnit == "pet" or auraInfo.sourceUnit == "vehicle"))
 	end
 
 	function Kai_AurasSetup(kai)
@@ -2372,7 +2314,7 @@ do -- Auras
 				end
 			end
 		end
-		Kai_AurasUpdate(kai)
+		Kai_AurasFullUpdate(kai)
 		if kai.buffFunc or kai.debuffFunc then
 			kai:RegisterUnitEvent("UNIT_AURA", kai.unitID)
 		else
@@ -2380,28 +2322,233 @@ do -- Auras
 		end
 	end
 
-	function Kai_AurasUpdate(kai)
-		index = 1
-		unit = kai.unitID
-		if kai.buffFunc then
-			shouldShowFunc = kai.buffFunc
-			for i = 1, 30 do
-				name, texture, count, auraType, duration, expire, caster, _, nameplatePersonal, spellID, canApplyAura, isBoss, _, nameplateAll = UnitBuff(unit, i)
-				if not name then break end
-				if UpdateBuff(kai) and index > 5 then break end
+	local function UpdateBuff(frame, aura)
+		if aura then
+			aura.frame = frame
+			frame.auraInstanceID = aura.auraInstanceID
+			frame.icon:SetTexture(aura.icon)
+			frame:SetIgnoreParentAlpha(aura.isBoss or aura.emphasize or false)
+			if aura.count > 1 then
+				frame.nums:SetText(aura.count)
+				frame.nums:Show()
+			else
+				frame.nums:Hide()
 			end
+			if aura.duration > 0 then
+				CooldownFrame_Set(frame.cooldown, aura.expire - aura.duration, aura.duration, true, true)
+			else
+				CooldownFrame_Clear(frame.cooldown)
+			end
+			if aura.isBoss or aura.enlarge then
+				frame:SetSize(db.buff.size.W * db.buff.bossScale, db.buff.size.H * db.buff.bossScale)
+			else
+				frame:SetSize(db.buff.size.W - db.buff.borderSize, db.buff.size.H - db.buff.borderSize)
+			end
+			if aura.isBoss then
+				frame.bg:SetVertexColor(1, 0, 0.5)
+			elseif aura.colorR then
+				frame.bg:SetVertexColor(aura.colorR, aura.colorG, aura.colorB)
+			elseif aura.isOwn or aura.caster == "" or UnitIsUnit("player", aura.caster) or UnitIsUnit("pet", aura.caster) then
+				frame.bg:SetVertexColor(0, 0, 0)
+			elseif UnitPlayerOrPetInGroup(aura.caster) then
+				frame.bg:SetVertexColor(0, 0.35, 0.75)
+			else
+				frame.bg:SetVertexColor(0, 0, 0)
+			end
+			frame:Show()
+		else
+			frame:Hide()
+			frame.auraInstanceID = nil
+		end
+	end
+
+	local AURAS_MAX_DISPLAY = 6
+	function UpdateBuffs(kai, startIndex)
+		local aura, frame
+		for i = startIndex, AURAS_MAX_DISPLAY do
+			frame = kai.buffs[i]
+			aura = kai.aurasSortMap[i]
+			if aura then
+				if not frame then
+					frame = CreateBuff(kai)
+				end
+			end
+			if frame then
+				UpdateBuff(frame, aura)
+			end
+		end
+		if frame then
+			for i = frame.index + 1, #kai.aurasSortMap do
+				kai.aurasSortMap[i].frame = nil
+			end
+		end
+	end
+
+	local function SetAuraInfo(aura, auraInfo, filterInfo)
+		aura.isBuff = auraInfo.isHelpful or false
+		aura.isOwn = auraInfo.sourceUnit == "player" or auraInfo.sourceUnit == "pet" or auraInfo.sourceUnit == "vehicle"
+		aura.caster = auraInfo.sourceUnit or ""
+		aura.icon = auraInfo.icon
+		aura.count = auraInfo.applications
+		-- aura.charges = auraInfo.charges
+		aura.expire = auraInfo.expirationTime
+		aura.duration = auraInfo.duration
+		aura.isBoss = auraInfo.isBossAura and not auraInfo.nameplateShowPersonal
+		-- aura.nameplateShowAll = auraInfo.nameplateShowAll
+		-- aura.nameplateShowPersonal = auraInfo.nameplateShowPersonal
+		if filterInfo then
+			aura.auraInstanceID = auraInfo.auraInstanceID
+			aura.spellID = auraInfo.spellId
+			aura.enlarge = filterInfo.enlarge
+			aura.emphasize = filterInfo.emphasize
+			aura.colorR, aura.colorG, aura.colorB = filterInfo.colorR, filterInfo.colorG, filterInfo.colorB
+		end
+	end
+
+	local function AuraSortFunc(a, b)
+		if a.isBuff ~= b.isBuff then
+			return a.isBuff
+		end
+		if a.isOwn ~= b.isOwn then
+			return a.isOwn
+		end
+		if a.isEnlarge ~= b.isEnlarge then
+			return a.isEnlarge
+		end
+		-- if a.canApplyAura ~= b.canApplyAura then
+		-- 	return a.canApplyAura
+		-- end
+		return a.auraInstanceID < b.auraInstanceID
+	end
+
+	local function AuraSortedInsert(t, aura)
+		local size = #t
+		local index
+		if aura.isOwn then
+			for i = 1, size do
+				if AuraSortFunc(aura, t[i]) then
+					index = i
+					break
+				end
+			end
+			if not index then index = size + 1 end
+		else
+			for i = size, 1, -1 do
+				if AuraSortFunc(t[i], aura) then
+					index = i + 1
+					break
+				end
+			end
+			if not index then index = 1 end
+		end
+		tinsert(t, index, aura)
+		return index
+	end
+
+	function Kai_AurasUnitAura(kai, updateInfo)
+		local updateStartIndex = 1000
+		if updateInfo.addedAuras then
+			local ShouldShowFunc
+			for _, auraInfo in ipairs(updateInfo.addedAuras) do
+				if kai.auras[auraInfo.auraInstanceID] then -- update
+
+				else
+					ShouldShowFunc = (auraInfo.isHelpful and kai.buffFunc) or (auraInfo.isHarmful and kai.debuffFunc)
+					if ShouldShowFunc then
+						filterInfo = InfoDummy
+						if ShouldShowFunc(auraInfo) then
+							local aura = {}
+							SetAuraInfo(aura, auraInfo, filterInfo)
+							kai.auras[auraInfo.auraInstanceID] = aura
+							updateStartIndex = min(updateStartIndex, AuraSortedInsert(kai.aurasSortMap, aura))
+						end
+					end
+				end
+			end
+		end
+		if updateInfo.updatedAuraInstanceIDs then
+			local prevID -- fix for the duplication update
+			for _, auraInstanceID in ipairs(updateInfo.updatedAuraInstanceIDs) do
+				if prevID ~= auraInstanceID then
+					if kai.auras[auraInstanceID] then
+						local aura = kai.auras[auraInstanceID]
+						local auraInfo = GetAuraDataByAuraInstanceID(kai.unitID, auraInstanceID)
+						if auraInfo and (abs(auraInfo.expirationTime - aura.expire) > 0.075 or auraInfo.applications ~= aura.count or auraInfo.duration ~= aura.duration) then
+							SetAuraInfo(aura, auraInfo)
+							if aura.frame and (updateStartIndex == 1000 or aura.frame.index < updateStartIndex) then
+								UpdateBuff(aura.frame, aura)
+							end
+						end
+					end
+					prevID = auraInstanceID
+				end
+			end
+		end
+		if updateInfo.removedAuraInstanceIDs then
+			if #updateInfo.removedAuraInstanceIDs > 7 then
+				Kai_AurasFullUpdate(kai)
+				return
+			end
+			for _, auraInstanceID in ipairs(updateInfo.removedAuraInstanceIDs) do
+				if kai.auras[auraInstanceID] then
+					local aura = kai.auras[auraInstanceID]
+					kai.auras[auraInstanceID] = nil
+					local index = tIndexOf(kai.aurasSortMap, aura)
+					if index then
+						tremove(kai.aurasSortMap, index)
+						updateStartIndex = min(updateStartIndex, index)
+					end
+					wipe(aura)
+				end
+			end
+		end
+		if updateStartIndex ~= 1000 then
+			UpdateBuffs(kai, updateStartIndex)
+		end
+	end
+
+	local function AuraSlotsHelper(kai, ShouldShowFunc, token, ...)
+		local nums = select("#", ...)
+    local slot, auraInfo
+		for i = 1, nums do
+			slot = select(i, ...)
+			auraInfo = GetAuraDataBySlot(kai.unitID, slot)
+			filterInfo = InfoDummy
+			if auraInfo and auraInfo.auraInstanceID and ShouldShowFunc(auraInfo) then
+				local aura = {}
+				SetAuraInfo(aura, auraInfo, filterInfo)
+				tinsert(kai.aurasSortMap, aura)
+			end
+		end
+		return token
+	end
+
+	function Kai_AurasFullUpdate(kai)
+		wipe(kai.auras)
+		for i = 1, #kai.aurasSortMap do
+			wipe(kai.aurasSortMap[i])
+		end
+		wipe(kai.aurasSortMap)
+
+		local continuationToken
+		if kai.buffFunc then
+			repeat
+				continuationToken = AuraSlotsHelper(kai, kai.buffFunc, UnitAuraSlots(kai.unitID, "HELPFUL", nil, continuationToken))
+			until continuationToken == nil
 		end
 		if kai.debuffFunc then
-			shouldShowFunc = kai.debuffFunc
-			for i = 1, 50 do
-				name, texture, count, auraType, duration, expire, caster, _, nameplatePersonal, spellID, canApplyAura, isBoss, _, nameplateAll = UnitDebuff(unit, i)
-				if not name then break end
-				if UpdateBuff(kai) and index > 5 then break end
-			end
+			repeat
+				continuationToken = AuraSlotsHelper(kai, kai.debuffFunc, UnitAuraSlots(kai.unitID, "HARMFUL", nil, continuationToken))
+			until continuationToken == nil
 		end
-		for i = index, #kai.buffs do
-			Buff_Hide(kai.buffs[i])
+
+		table.sort(kai.aurasSortMap, AuraSortFunc)
+
+		for i, aura in ipairs(kai.aurasSortMap) do
+			kai.auras[aura.auraInstanceID] = aura
 		end
+
+		UpdateBuffs(kai, 1)
 	end
 end
 
@@ -3269,7 +3416,6 @@ function events:UNIT_LEVEL(unit)
 		Kai_Refresh(kaiPlates[GetNamePlateForUnit(unit)])
 	end
 end
--- events.units.UNIT_LEVEL = "player"
 
 -- function events:BATTLEFIELD_MGR_STATE_CHANGE(id, status)
 -- 	if status == 0 or status == 3 then
