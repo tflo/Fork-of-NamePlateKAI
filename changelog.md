@@ -1,5 +1,10 @@
 # Changelog for this fork
 
+## Changes 2023-08-14
+
+- Fixed label text of the player name small text font checkbox. (I'm obsessed with label text that actually describes what the labelled thing does 😉 )
+- Merged official 10.1.146
+
 ## Changes 2023-08-04
 
 ### Selective merge of the new official 10.1.145 into my fork
