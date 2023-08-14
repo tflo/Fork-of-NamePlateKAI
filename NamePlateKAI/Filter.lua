@@ -1170,6 +1170,9 @@ db[1065] = { zone = 767, -- Neltharion's Lair
 		[102287] = 1, -- Emberhusk Dominator
 		[113537] = 1, -- Emberhusk Dominator
 		[101476] = 3, -- Molten Charskin
+	},
+	auras = {
+		{id = "area1065:200672", spellID = 200672, buff = true, enlarge = true, emphasize = true, color = 4}, -- Crystal Cracked
 	}
 }
 
