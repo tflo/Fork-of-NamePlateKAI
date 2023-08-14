@@ -982,7 +982,7 @@ function options:CreateWidget()
 		group:AddChild(CreateSlider("unitNamePlayerSlider", "Size", 5, 30, 0.1, 0.24))
 		group:AddChild(CreateCheckBox("unitNamePlayerOutlineCheck", "Outline", nil, 0.18))
 		group:AddChild(CreateSlider("nameSmallMultiplierSlider", "Small Text Multiplier", 0.1, 1, 0.01, 0.325))
-		group:AddChild(CreateCheckBox("useNameSmallInsteadPlayerSmallCheck", "Use Spell Font as Small Text Font", nil, 0.5))
+		group:AddChild(CreateCheckBox("useNameSmallInsteadPlayerSmallCheck", "Use Spell Font also for Player Small Text", nil, 0.5))
 	else
 		local noLSMLabel1 = GUI:Create("Label")
 		noLSMLabel1:SetRelativeWidth(0.9)
