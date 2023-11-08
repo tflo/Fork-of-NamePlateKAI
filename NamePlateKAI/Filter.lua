@@ -4115,6 +4115,30 @@ db["map325"] = { zone = 68, -- The Vortex Pinnacle
 	},
 }
 
+db["map323"] = { zone = 65, -- Throne of the Tides
+	category = 402,
+	order = {
+		"h\\101", -- Lady Naz'jar
+		"h\\102", -- Commander Ulthok, the Festering Prince
+		"h\\103", -- Mindbender Ghur'sha
+		"h\\104", -- Ozumat
+	},
+	flags = {
+		["*"] = {
+			[40586] = 0x0020,
+			[40765] = 0x0020,
+			[40788] = 0x0020,
+			[44566] = 0x0020,
+			[40825] = 0x0020, -- Erunak Stonespeaker
+		},
+	},
+	recolor = {
+	},
+	auras = {
+
+	},
+}
+
 db["map2125"] = { zone = 1200, -- Vault of the Incarnates
 	group = 437,
 	category = 1051,
@@ -4269,6 +4293,31 @@ db["map2166"] = { zone = 1208, -- Aberrus, the Shadowed Crucible
 
 		-- Scalecommander Sarkareth
 		[202971] = 1, -- Null Glimmer
+	},
+	auras = {
+	},
+}
+
+db["map2232"] = { zone = 1207, -- Amirdrassil, the Dream's Hope
+  group = 443,
+	category = 1053,
+	order = {
+		"h\\-",  -- Trash
+		"h\\2564",  -- Gnarlroot
+		"h\\2554",  -- Igria the Cruel
+		"h\\2557",  -- Volcoross
+		"h\\2555",  -- Council of Dreams
+		"h\\2553",  -- Larodar, Keeper of the Flame
+		"h\\2556",  -- Nymue, Weaver of the Cycle
+		"h\\2563",  -- Smolderon
+		"h\\2565",  -- Tindral Sageswift, Seer of the Flame
+		"h\\2519",  -- Fyrakk the Blazing
+	},
+	flags = {
+		["*"] = {
+		},
+	},
+	recolor = {
 	},
 	auras = {
 	},
