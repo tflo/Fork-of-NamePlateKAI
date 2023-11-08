@@ -1,6 +1,6 @@
-## Interface: 100105
+## Interface: 100200
 ## Title: NamePlateKAI
-## Version: 10.1.146
+## Version: 10.2.147
 ## Author: Jaijai
 ## IconTexture: Interface\AddOns\NamePlateKAI\texture\icon
 ## SavedVariables: NamePlateKAIDB, NamePlateKAIFilter, NamePlateKAIAura
